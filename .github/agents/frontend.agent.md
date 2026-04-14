@@ -6,7 +6,7 @@ tools:
   - edit
   - search
   - todo
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.3-Codex (copilot)
 ---
 
 ## 🎨 Role

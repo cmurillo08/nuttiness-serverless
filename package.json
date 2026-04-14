@@ -1,0 +1,22 @@
+{
+  "name": "nuttiness-serverless",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "clean:setup": "bash scripts/clean-reset.sh",
+    "setup:backend": "python3 -m venv .venv && ./.venv/bin/python3 -m pip install --upgrade pip && ./.venv/bin/python3 -m pip install -r backend/requirements.txt",
+    "preoffline": "node scripts/patch-serverless-offline.mjs",
+    "offline": "VIRTUAL_ENV=$PWD/.venv PATH=$PWD/.venv/bin:$PATH serverless offline",
+    "preoffline:verbose": "node scripts/patch-serverless-offline.mjs",
+    "offline:verbose": "VIRTUAL_ENV=$PWD/.venv PATH=$PWD/.venv/bin:$PATH serverless offline --verbose",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:preview": "npm --prefix frontend run preview",
+    "setup:frontend": "node scripts/check-node20.mjs && npm --prefix frontend install",
+    "setup:all": "npm install && npm run setup:backend && npm run setup:frontend"
+  },
+  "devDependencies": {
+    "serverless": "^3.39.0",
+    "serverless-offline": "^13.8.0"
+  }
+}
