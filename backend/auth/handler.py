@@ -24,6 +24,30 @@ def _json_response(status_code: int, body: dict, extra_headers: dict = None) -> 
         headers=_cors_headers(extra_headers),
     )
 
+
+def _json_response_with_cookies(status_code: int, body: dict, cookies: list) -> Response:
+    return Response(
+        status_code=status_code,
+        content_type=content_types.APPLICATION_JSON,
+        body=json.dumps(body),
+        headers=_cors_headers(),
+        cookies=cookies,
+    )
+
+
+def _session_cookies(token: str | None = None) -> list:
+    cookies = []
+    if token is not None:
+        cookies.append(auth.make_session_cookie(token))
+    return cookies
+
+
+def _clear_session_cookies() -> list:
+    return [
+        auth.clear_session_cookie(),
+        auth.clear_session_cookie(path=auth.LEGACY_AUTH_COOKIE_PATH),
+    ]
+
 @app.post("/api/v1/auth/login")
 def login():
     body = app.current_event.json_body or {}
@@ -37,11 +61,11 @@ def login():
         return _json_response(401, {"error": "Invalid credentials"})
     session_secret = os.environ.get("SESSION_SECRET", "")
     token = auth.sign_token(username, session_secret)
-    return _json_response(200, {"ok": True}, {"Set-Cookie": auth.make_session_cookie(token)})
+    return _json_response_with_cookies(200, {"ok": True}, _session_cookies(token))
 
 @app.post("/api/v1/auth/logout")
 def logout():
-    return _json_response(200, {"ok": True}, {"Set-Cookie": auth.clear_session_cookie()})
+    return _json_response_with_cookies(200, {"ok": True}, _clear_session_cookies())
 
 @app.get("/api/v1/auth/me")
 def me():
@@ -60,7 +84,7 @@ def me():
         username = auth.verify_token(token, session_secret)
     except Exception:
         return _json_response(401, {"error": "Unauthenticated"})
-    return _json_response(200, {"username": username})
+    return _json_response_with_cookies(200, {"username": username}, _session_cookies(token))
 
 def handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
