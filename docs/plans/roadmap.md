@@ -1,7 +1,7 @@
 ---
 title: nuttiness-serverless — Migration Roadmap
-version: 1.0
-updated: 2026-04-14
+version: 1.1
+updated: 2026-04-19
 ---
 
 # nuttiness-serverless — Migration Roadmap
@@ -141,13 +141,74 @@ frontend/
 
 | Phase | Status |
 |-------|--------|
-| 0 — Scaffold | 🔲 Not started |
-| 1 — Auth | 🔲 Not started |
+| 0 — Scaffold | ✅ Complete |
+| 1 — Auth | ✅ Complete |
 | 2 — Products | 🔲 Not started |
 | 3 — Expenses | 🔲 Not started |
 | 4 — Sales & Customers | 🔲 Not started |
 | 5 — Reporting | 🔲 Not started |
 | 6 — Deployment | 🔲 Not started |
+
+---
+
+## Stack Decisions (Phase 0 — permanent constraints)
+
+These decisions were made during Phase 0 setup and affect all future phases. Do not change them without updating this section.
+
+| Decision | Value | Reason |
+|----------|-------|--------|
+| Serverless Framework version | **v3** (`^3.39.0`) | v4 requires account login / license. v3 is free for local dev and deploy. |
+| `frameworkVersion` in `serverless.yml` | `"3"` | Must match the installed CLI version. |
+| Lambda runtime | **`python3.11`** | Serverless v3 runtime validation rejects `python3.12`. Use `python3.11` for all functions. |
+| Python DB driver | **`psycopg[binary]>=3.1.0`** (psycopg3) | Cleaner API, better type mapping, native async. `[binary]` extra needed for Lambda (pre-compiled C extension). |
+| serverless-offline version | **`^13.8.0`** | Locked to avoid future breakage. |
+| serverless-offline httpPort | **`3001`** | Frontend dev server runs on `5173` and proxies `/api` to `3001`. Never change this. |
+| `noPrependStageInUrl` | `true` | Prevents routes from being served as `/dev/api/v1/...` locally. |
+| Node version | **20** (pinned in `.nvmrc`) | React Router v7 and `@tailwindcss/oxide` both require Node >= 20. |
+| Tailwind version | **v4** via `@tailwindcss/vite` plugin | No `tailwind.config.js` or `postcss.config.js`. Just `@import "tailwindcss";` in `index.css`. |
+| React Router version | **v7** | Installed as `react-router-dom@^7`. |
+| Python venv location | **`.venv/`** at repo root | Created by `npm run setup:backend`. |
+| VIRTUAL_ENV injection | `VIRTUAL_ENV=$PWD/.venv PATH=$PWD/.venv/bin:$PATH` prepended to `offline` npm scripts | serverless-offline reads `VIRTUAL_ENV` to find the correct Python interpreter. No manual `source .venv/bin/activate` needed. |
+| `.env` loading | `useDotenv: true` at root of `serverless.yml` | `${env:VAR}` in serverless.yml reads from the shell environment only. Without `useDotenv: true`, values in `.env` are never loaded and all env vars fall back to `''`. |
+| Python package imports | Every `backend/<domain>/` and `backend/shared/` needs an `__init__.py` | Without it, `from backend.shared import auth` may fail as a proper package import. Create empty `__init__.py` in every backend subdirectory. |
+| Lambda response format | Use `Response` object (powertools) for non-200 | Returning a Python tuple `(body, status, headers)` causes powertools to serialize it as a JSON array with HTTP 200. Always use `Response(status_code=..., body=json.dumps(...), headers=...)`. |
+| serverless-offline `parseCookies` bug | Patched via `scripts/patch-serverless-offline.mjs` (Patch 2) | `HttpServer.js`'s `parseCookies` passes the full cookie string (e.g. `TOKEN; Path=/; HttpOnly`) to hapi's `h.state()`. `@hapi/statehood` rejects `;` as invalid in a cookie value. Patch: `.split(";")[0].trim()` to extract only the token before passing to `h.state()`. |
+| serverless-offline `PythonRunner` shell bug | Patched via `scripts/patch-serverless-offline.mjs` (Patch 1) | `PythonRunner.js` uses `shell: true` which breaks Python invocation on paths with spaces (e.g. `Personal Projects`). Patch: `shell: false`. |
+
+### File layout (current)
+```
+serverless.yml              — Serverless Framework config (v3, python3.11, port 3001)
+package.json                — Root npm project; Serverless CLI + dev scripts
+backend/
+  requirements.txt          — aws-lambda-powertools>=3.0.0, psycopg[binary]>=3.1.0, pydantic>=2.0.0
+  health/
+    handler.py              — Phase 0 health-check Lambda
+  shared/                   — (empty — populated from Phase 1 onwards)
+frontend/
+  package.json              — Vite + React 19 + Tailwind v4 + React Router v7
+  vite.config.js            — @tailwindcss/vite plugin + /api proxy to localhost:3001
+  src/
+    main.jsx
+    App.jsx
+    index.css
+    pages/Home.jsx
+scripts/
+  patch-serverless-offline.mjs  — fixes shell:true bug in PythonRunner.js
+  clean-reset.sh                — removes .venv, node_modules, dist, __pycache__
+  check-node20.mjs              — guards setup:frontend from running on Node < 20
+.env.example                — DATABASE_URL, APP_USERNAME, APP_PASSWORD, SESSION_SECRET, API_BASE_URL
+.nvmrc                      — 20
+.gitignore                  — covers .venv/, node_modules/, frontend/dist/, .serverless/, .env
+```
+
+### npm scripts quick reference
+| Script | What it does |
+|--------|--------------|
+| `npm run setup:all` | Full first-time setup: npm install + .venv + frontend deps |
+| `npm run offline` | Patch serverless-offline, then start (with VIRTUAL_ENV injected) |
+| `npm run offline:verbose` | Same, with verbose Lambda logs |
+| `npm run frontend:dev` | Start Vite dev server on port 5173 |
+| `npm run clean:setup` | Remove all generated/installed artifacts |
 
 ---
 

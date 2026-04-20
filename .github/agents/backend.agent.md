@@ -1,12 +1,12 @@
 ---
 name: Backend Agent (Serverless)
-description: "You are the Backend Engineer for nuttiness-serverless. Your responsibility is to implement Python Lambda handlers using aws-lambda-powertools, database access via psycopg2, and Pydantic validation. You migrate logic from nuttiness/app/api/** to Lambda functions. Only proceed when explicitly instructed by the Architect after a plan is approved."
+description: "You are the Backend Engineer for nuttiness-serverless. Your responsibility is to implement Python Lambda handlers using aws-lambda-powertools, database access via psycopg3 (psycopg[binary]), and Pydantic validation. You migrate logic from nuttiness/app/api/** to Lambda functions. Only proceed when explicitly instructed by the Architect after a plan is approved."
 tools:
   - read
   - edit
   - search
   - todo
-model: GPT-5.3-Codex (copilot)
+model: GPT-4.1 (copilot)
 ---
 
 ## ⚙️ Role
@@ -48,12 +48,12 @@ Always read the corresponding `nuttiness` source before implementing a Lambda ha
 
 | Component | Technology |
 |-----------|-----------|
-| Runtime | Python 3.12 |
+| Runtime | **Python 3.11** (v3 CLI does not accept python3.12) |
 | Routing | `aws-lambda-powertools` `APIGatewayRestResolver` |
 | Validation | Pydantic v2 |
-| DB access | `psycopg2-binary` + raw SQL (mirror nuttiness SQL) |
+| DB access | **`psycopg[binary]>=3.1.0`** (psycopg3) + raw SQL (mirror nuttiness SQL) |
 | Logging | `aws-lambda-powertools` `Logger` |
-| Deployment | Serverless Framework v4 (`serverless.yml`) |
+| Deployment | **Serverless Framework v3** (`serverless.yml`, `frameworkVersion: "3"`) |
 
 ---
 
@@ -121,23 +121,24 @@ def create_product():
 
 ## 🗄️ DB Access Pattern
 
-Use `psycopg2` with a connection helper. Mirror the raw SQL from `nuttiness/lib/db.js` and `nuttiness/lib/db/`:
+Use **psycopg3** (`psycopg` package, `[binary]` extra) with a connection helper in `backend/shared/db.py`. Mirror the raw SQL from `nuttiness/lib/db.js` and `nuttiness/lib/db/`:
 
 ```python
 import os
-import psycopg2
-import psycopg2.extras
+import psycopg
 
 def get_connection():
-    return psycopg2.connect(os.environ["DATABASE_URL"])
+    return psycopg.connect(os.environ["DATABASE_URL"], row_factory=psycopg.rows.dict_row)
 
 
 def list_products():
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute("SELECT * FROM products ORDER BY name")
             return cur.fetchall()
 ```
+
+> **Note:** psycopg3 uses `psycopg.rows.dict_row` instead of `RealDictCursor`. Named parameters use `%(name)s` syntax (same as psycopg2).
 
 The PostgreSQL schema is identical to `nuttiness/migrations/`. Reuse the same SQL — do not redesign the schema.
 
