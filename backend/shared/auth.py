@@ -5,6 +5,11 @@ import json
 import secrets
 import time
 from typing import Any
+from aws_lambda_powertools.shared.cookies import Cookie, SameSite
+
+
+SESSION_COOKIE_NAME = "nuttiness_session"
+LEGACY_AUTH_COOKIE_PATH = "/api/v1/auth/"
 
 def sign_token(username: str, secret: str) -> str:
     payload = {"user": username, "iat": int(time.time())}
@@ -32,15 +37,25 @@ def verify_token(token: str, secret: str) -> str:
         raise ValueError("Invalid payload structure")
     return payload["user"]
 
-def make_session_cookie(token: str, secure: bool = False) -> str:
-    # Omit Secure flag by default (local HTTP dev). Set secure=True in production (Phase 6).
-    secure_flag = "; Secure" if secure else ""
-    return (
-        f"nuttiness_session={token}; Path=/; Max-Age=604800; HttpOnly{secure_flag}; SameSite=Lax"
+def make_session_cookie(token: str, secure: bool = False, path: str = "/") -> Cookie:
+    # Omit Secure in local HTTP dev. Enable it in production once HTTPS is in place.
+    return Cookie(
+        name=SESSION_COOKIE_NAME,
+        value=token,
+        path=path,
+        max_age=604800,
+        http_only=True,
+        secure=secure,
+        same_site=SameSite.LAX_MODE,
     )
 
-def clear_session_cookie(secure: bool = False) -> str:
-    secure_flag = "; Secure" if secure else ""
-    return (
-        f"nuttiness_session=; Path=/; Max-Age=0; HttpOnly{secure_flag}; SameSite=Lax"
+def clear_session_cookie(secure: bool = False, path: str = "/") -> Cookie:
+    return Cookie(
+        name=SESSION_COOKIE_NAME,
+        value="",
+        path=path,
+        max_age=0,
+        http_only=True,
+        secure=secure,
+        same_site=SameSite.LAX_MODE,
     )

@@ -8,6 +8,7 @@ provider:
   region: us-east-1
   environment:
     DATABASE_URL: ${env:DATABASE_URL, ''}
+    PGSCHEMA: ${env:PGSCHEMA, ''}
     APP_USERNAME: ${env:APP_USERNAME, ''}
     APP_PASSWORD: ${env:APP_PASSWORD, ''}
     SESSION_SECRET: ${env:SESSION_SECRET, ''}
@@ -36,6 +37,50 @@ functions:
       - http:
           path: /api/v1/auth/me
           method: get
+          cors: true
+
+  products:
+    handler: backend/products/handler.handler
+    events:
+      - http:
+          path: /api/v1/products
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/products
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: delete
+          cors: true
+      - http:
+          path: /api/v1/raw-products
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/raw-products
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: delete
           cors: true
 
 plugins:

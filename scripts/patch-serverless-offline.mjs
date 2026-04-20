@@ -31,11 +31,6 @@ if (pythonRunnerSource.includes("shell: false")) {
   console.log("[offline patch 1] applied: shell=true -> shell=false in PythonRunner")
 }
 
-// --- Patch 2: HttpServer parseCookies ---
-// serverless-offline's parseCookies passes the full Set-Cookie value (e.g.
-// "TOKEN; Path=/; HttpOnly; SameSite=Lax") to hapi's h.state(), which calls
-// @hapi/statehood and rejects the ';' character as an invalid cookie value char.
-// Fix: extract only the token (the part before the first ';') as the cookie value.
 const httpServerTarget = path.join(
   process.cwd(),
   "node_modules",
@@ -46,20 +41,51 @@ const httpServerTarget = path.join(
   "HttpServer.js",
 )
 
+// --- Patch 2 (revised): parseCookies → response.header ---
+// Root cause: hapi's request._states is keyed by cookie name (only one entry per name).
+// When two Set-Cookie headers share the same name (e.g. a session cookie at Path=/
+// and a legacy-clear cookie at Path=/api/v1/auth/), the second h.state() call
+// overwrites the first and the browser receives an empty token → auth/me returns 401.
+// Fix: bypass h.state() entirely and set the raw Set-Cookie header directly.
+// hapi supports multiple set-cookie values as an array when appending.
 if (!fs.existsSync(httpServerTarget)) {
   console.warn("[offline patch 2] HttpServer.js not found; skipping")
 } else {
   const httpServerSource = fs.readFileSync(httpServerTarget, "utf8")
-  const buggyPattern = `const cookieValue = headerValue.slice(headerValue.indexOf("=") + 1)`
-  const fixedPattern = `const cookieValue = headerValue.slice(headerValue.indexOf("=") + 1).split(";")[0].trim()`
 
-  if (httpServerSource.includes(fixedPattern)) {
-    console.log("[offline patch 2] already applied: HttpServer parseCookies fix")
-  } else if (!httpServerSource.includes(buggyPattern)) {
-    console.warn("[offline patch 2] expected pattern not found in HttpServer; skipping")
+  // The target replacement (single-line body, no h.state)
+  const fixedBody = `          response.header('set-cookie', headerValue, { append: true })`
+
+  if (httpServerSource.includes(fixedBody)) {
+    console.log("[offline patch 2] already applied: parseCookies uses response.header directly")
   } else {
-    const patched = httpServerSource.replace(buggyPattern, fixedPattern)
-    fs.writeFileSync(httpServerTarget, patched, "utf8")
-    console.log("[offline patch 2] applied: parseCookies strips cookie attributes before h.state()")
+    // Match either the original unpatched body or the previously partially-patched body
+    const originalBody = `          const cookieName = headerValue.slice(0, headerValue.indexOf("="))
+          const cookieValue = headerValue.slice(headerValue.indexOf("=") + 1)
+
+          h.state(cookieName, cookieValue, {
+            encoding: "none",
+            strictHeader: false,
+          })`
+
+    const partiallyPatchedBody = `          const cookieName = headerValue.slice(0, headerValue.indexOf("="))
+          const cookieValue = headerValue.slice(headerValue.indexOf("=") + 1).split(";")[0].trim()
+
+          h.state(cookieName, cookieValue, {
+            encoding: "none",
+            strictHeader: false,
+          })`
+
+    if (httpServerSource.includes(partiallyPatchedBody)) {
+      const patched = httpServerSource.replace(partiallyPatchedBody, fixedBody)
+      fs.writeFileSync(httpServerTarget, patched, "utf8")
+      console.log("[offline patch 2] applied: parseCookies → response.header (from partially patched state)")
+    } else if (httpServerSource.includes(originalBody)) {
+      const patched = httpServerSource.replace(originalBody, fixedBody)
+      fs.writeFileSync(httpServerTarget, patched, "utf8")
+      console.log("[offline patch 2] applied: parseCookies → response.header (from original state)")
+    } else {
+      console.warn("[offline patch 2] expected parseCookies pattern not found in HttpServer; skipping")
+    }
   }
 }

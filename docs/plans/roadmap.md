@@ -143,7 +143,7 @@ frontend/
 |-------|--------|
 | 0 — Scaffold | ✅ Complete |
 | 1 — Auth | ✅ Complete |
-| 2 — Products | 🔲 Not started |
+| 2 — Products | ✅ Complete |
 | 3 — Expenses | 🔲 Not started |
 | 4 — Sales & Customers | 🔲 Not started |
 | 5 — Reporting | 🔲 Not started |
@@ -171,7 +171,9 @@ These decisions were made during Phase 0 setup and affect all future phases. Do 
 | VIRTUAL_ENV injection | `VIRTUAL_ENV=$PWD/.venv PATH=$PWD/.venv/bin:$PATH` prepended to `offline` npm scripts | serverless-offline reads `VIRTUAL_ENV` to find the correct Python interpreter. No manual `source .venv/bin/activate` needed. |
 | `.env` loading | `useDotenv: true` at root of `serverless.yml` | `${env:VAR}` in serverless.yml reads from the shell environment only. Without `useDotenv: true`, values in `.env` are never loaded and all env vars fall back to `''`. |
 | Python package imports | Every `backend/<domain>/` and `backend/shared/` needs an `__init__.py` | Without it, `from backend.shared import auth` may fail as a proper package import. Create empty `__init__.py` in every backend subdirectory. |
-| Lambda response format | Use `Response` object (powertools) for non-200 | Returning a Python tuple `(body, status, headers)` causes powertools to serialize it as a JSON array with HTTP 200. Always use `Response(status_code=..., body=json.dumps(...), headers=...)`. |
+| Python version for `.venv` | Use `python3.11` explicitly in `setup:backend` | System `python3` on macOS defaults to 3.9. `.venv` must be created with `python3.11 -m venv .venv` to match the Lambda runtime and support modern syntax (`dict \| None`, `list[dict]`, etc.). |
+| DB schema (`PGSCHEMA`) | Set `PGSCHEMA=nuttiness` in `.env`; `db.py` passes `options="-c search_path=nuttiness"` to psycopg3 | The nuttiness PostgreSQL database uses a non-default schema (`nuttiness` schema inside `personal_projects` DB). Without setting `search_path`, all queries fail with "relation does not exist". Mirror: `PGSCHEMA` env var → `search_path` connection option. |
+| Auth guard pattern in handlers | `require_auth()` reads `app.current_event.headers` — no argument | `APIGatewayProxyEvent` (REST API) has no `.cookies` attribute — that's HTTP API v2 only. Always parse cookies from `app.current_event.headers.get("cookie")` and call `require_auth()` with no arguments. |
 | serverless-offline `parseCookies` bug | Patched via `scripts/patch-serverless-offline.mjs` (Patch 2) | `HttpServer.js`'s `parseCookies` passes the full cookie string (e.g. `TOKEN; Path=/; HttpOnly`) to hapi's `h.state()`. `@hapi/statehood` rejects `;` as invalid in a cookie value. Patch: `.split(";")[0].trim()` to extract only the token before passing to `h.state()`. |
 | serverless-offline `PythonRunner` shell bug | Patched via `scripts/patch-serverless-offline.mjs` (Patch 1) | `PythonRunner.js` uses `shell: true` which breaks Python invocation on paths with spaces (e.g. `Personal Projects`). Patch: `shell: false`. |
 
