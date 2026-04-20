@@ -1,5 +1,6 @@
 service: nuttiness-serverless
 frameworkVersion: "3"
+useDotenv: true
 
 provider:
   name: aws
@@ -10,6 +11,7 @@ provider:
     APP_USERNAME: ${env:APP_USERNAME, ''}
     APP_PASSWORD: ${env:APP_PASSWORD, ''}
     SESSION_SECRET: ${env:SESSION_SECRET, ''}
+    FRONTEND_ORIGIN: ${env:FRONTEND_ORIGIN, 'http://localhost:5173'}
 
 functions:
   health:
@@ -17,6 +19,22 @@ functions:
     events:
       - http:
           path: /api/v1/health
+          method: get
+          cors: true
+
+  auth:
+    handler: backend/auth/handler.handler
+    events:
+      - http:
+          path: /api/v1/auth/login
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/auth/logout
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/auth/me
           method: get
           cors: true
 
