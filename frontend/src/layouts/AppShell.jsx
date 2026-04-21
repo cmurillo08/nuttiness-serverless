@@ -2,12 +2,44 @@ import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { logout } from '../api/auth'
 
+function IconBase({ className, children }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      {children}
+    </svg>
+  )
+}
+function SalesIcon({ className }) {
+  return <IconBase className={className}><path d="M4 19h16" /><path d="M7 15l3-3 3 2 4-5" /><path d="M17 9h3v3" /></IconBase>
+}
+function ExpensesIcon({ className }) {
+  return <IconBase className={className}><rect x="4" y="5" width="16" height="14" rx="2" /><path d="M4 10h16" /><path d="M8 15h3" /></IconBase>
+}
+function RawProductsIcon({ className }) {
+  return <IconBase className={className}><path d="M12 3l7 4-7 4-7-4 7-4Z" /><path d="M5 7v6l7 4 7-4V7" /></IconBase>
+}
+function ProductsIcon({ className }) {
+  return <IconBase className={className}><rect x="4" y="4" width="7" height="7" rx="1.5" /><rect x="13" y="4" width="7" height="7" rx="1.5" /><rect x="4" y="13" width="7" height="7" rx="1.5" /><rect x="13" y="13" width="7" height="7" rx="1.5" /></IconBase>
+}
+function CustomersIcon({ className }) {
+  return <IconBase className={className}><path d="M16 19a4 4 0 0 0-8 0" /><circle cx="12" cy="11" r="3" /><path d="M19 19a3 3 0 0 0-2.4-2.93" /><path d="M7.4 16.07A3 3 0 0 0 5 19" /></IconBase>
+}
+function ReportsIcon({ className }) {
+  return <IconBase className={className}><path d="M6 20V10" /><path d="M12 20V4" /><path d="M18 20v-7" /></IconBase>
+}
+function DashboardIcon({ className }) {
+  return <IconBase className={className}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></IconBase>
+}
+
 const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/products', label: 'Products' },
-  { to: '/raw-products', label: 'Raw Products' },
-  { to: '/expenses', label: 'Expenses', disabled: true },
-  { to: '/sales', label: 'Sales', disabled: true },
+  { to: '/', label: 'Dashboard', end: true, icon: DashboardIcon },
+  { to: '/sales', label: 'Sales', disabled: true, icon: SalesIcon },
+  { to: '/expenses', label: 'Expenses', disabled: true, icon: ExpensesIcon },
+  { to: '/raw-products', label: 'Raw Products', icon: RawProductsIcon },
+  { to: '/products', label: 'Products', icon: ProductsIcon },
+  { to: '/customers', label: 'Customers', disabled: true, icon: CustomersIcon },
+  { to: '/reports', label: 'Reports', disabled: true, icon: ReportsIcon },
 ]
 
 function navClass({ isActive }) {
@@ -23,14 +55,16 @@ function navClass({ isActive }) {
 function SidebarNav({ onNavigate }) {
   return (
     <nav className="flex-1 space-y-1" aria-label="Primary navigation">
-      {NAV_ITEMS.map((item) =>
-        item.disabled ? (
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon
+        return item.disabled ? (
           <span
             key={item.to}
             className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-slate-400 opacity-50 cursor-not-allowed select-none"
             title="Coming soon"
           >
-            {item.label}
+            <Icon className="h-5 w-5 shrink-0 opacity-50" />
+            <span className="truncate">{item.label}</span>
           </span>
         ) : (
           <NavLink
@@ -40,10 +74,11 @@ function SidebarNav({ onNavigate }) {
             onClick={onNavigate}
             className={navClass}
           >
-            {item.label}
+            <Icon className="h-5 w-5 shrink-0 text-current" />
+            <span className="truncate">{item.label}</span>
           </NavLink>
         )
-      )}
+      })}
     </nav>
   )
 }
@@ -52,6 +87,7 @@ function SidebarContent({ onNavigate, onLogout, loggingOut, onClose }) {
   return (
     <div className="flex h-full flex-col px-3 py-4">
       <div className="mb-6 flex items-center gap-3 rounded-3xl border border-white/70 bg-white/70 px-3 py-3 shadow-sm">
+        <img src="/nuttiness-logo.png" alt="Nuttiness" className="h-10 w-10 shrink-0 rounded-xl object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
         <div className="min-w-0">
           <div className="truncate text-base font-semibold text-[#8B6F47]">Nuttiness</div>
           <div className="truncate text-xs text-[#8B6F47]/70">Sabor que Enloquece</div>
@@ -120,6 +156,7 @@ export default function AppShell() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
+          <img src="/nuttiness-logo.png" alt="Nuttiness" className="h-7 w-7 rounded-lg object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
           <span className="text-sm font-semibold text-[#8B6F47]">Nuttiness</span>
           {/* spacer to balance the hamburger */}
           <div className="h-10 w-10" aria-hidden />
