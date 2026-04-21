@@ -11,7 +11,6 @@ export default function ProductForm() {
     name: '',
     unit: '',
     price: '',
-    cost_price: '',
     recipe_notes: '',
   })
   const [loading, setLoading] = useState(isEdit)
@@ -29,7 +28,6 @@ export default function ProductForm() {
           name: product.name ?? '',
           unit: product.unit ?? '',
           price: product.price != null ? String(product.price) : '',
-          cost_price: product.cost_price != null ? String(product.cost_price) : '',
           recipe_notes: product.recipe_notes ?? '',
         })
       })
@@ -58,7 +56,6 @@ export default function ProductForm() {
       name: fields.name.trim(),
       unit: fields.unit.trim(),
       price: fields.price !== '' ? Number(fields.price) : undefined,
-      cost_price: fields.cost_price !== '' ? Number(fields.cost_price) : undefined,
       recipe_notes: fields.recipe_notes.trim() || undefined,
     }
 
@@ -132,42 +129,22 @@ export default function ProductForm() {
               />
             </div>
 
-            {/* Price + Cost Price (two columns on larger screens) */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label htmlFor="price" className="block text-sm font-medium text-slate-700">
-                  Price <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="price"
-                  name="price"
-                  type="number"
-                  required
-                  min="0"
-                  step="0.01"
-                  value={fields.price}
-                  onChange={handleChange}
-                  className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="cost_price" className="block text-sm font-medium text-slate-700">
-                  Cost Price
-                </label>
-                <input
-                  id="cost_price"
-                  name="cost_price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={fields.cost_price}
-                  onChange={handleChange}
-                  className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
-                  placeholder="0.00"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label htmlFor="price" className="block text-sm font-medium text-slate-700">
+                Price <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                value={fields.price}
+                onChange={handleChange}
+                className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+                placeholder="0.00"
+              />
             </div>
 
             {/* Recipe Notes */}

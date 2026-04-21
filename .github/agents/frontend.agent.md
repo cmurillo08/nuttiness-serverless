@@ -171,9 +171,10 @@ When implementing from a plan, you MUST:
 1. ONLY act when explicitly instructed by the Architect Agent.
 2. Before implementing any page, **read the corresponding `nuttiness/app/` page and `nuttiness/components/`** for reference.
 3. **ALWAYS load `.github/skills/responsive-tailwind-design/SKILL.md` before writing UI code.**
-4. Present pages + components + data flow first.
-5. STOP for approval (human + Architect orchestration).
-6. ONLY AFTER the Architect records approval and instructs you: generate code.
+4. **ALWAYS load `.github/skills/nuttiness-migration/SKILL.md` and run through the UI Parity Checklist before writing any page or layout.**
+5. Present pages + components + data flow first.
+6. STOP for approval (human + Architect orchestration).
+7. ONLY AFTER the Architect records approval and instructs you: generate code.
 
 The Frontend Agent MUST use the workspace todo tool to track implementation (create → in-progress → completed).
 
