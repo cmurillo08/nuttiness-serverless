@@ -144,7 +144,7 @@ frontend/
 | 0 — Scaffold | ✅ Complete |
 | 1 — Auth | ✅ Complete |
 | 2 — Products | ✅ Complete |
-| 3 — Expenses | 🔲 Not started |
+| 3 — Expenses | ✅ Complete |
 | 4 — Sales & Customers | 🔲 Not started |
 | 5 — Reporting | 🔲 Not started |
 | 6 — Deployment | 🔲 Not started |

@@ -12,6 +12,14 @@ async function request(path, options = {}) {
   if (!res.ok) {
     throw new Error(await res.text())
   }
+  if (res.status === 204) return null
+
+  const contentLength = res.headers.get('content-length')
+  if (contentLength === '0') return null
+
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) return null
+
   return res.json()
 }
 

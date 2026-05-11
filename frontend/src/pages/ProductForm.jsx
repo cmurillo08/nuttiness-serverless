@@ -166,18 +166,18 @@ export default function ProductForm() {
             {/* Actions */}
             <div className="flex flex-col gap-3 pt-2 sm:flex-row">
               <button
-                type="submit"
-                disabled={submitting}
-                className="min-h-11 flex-1 rounded-lg bg-[#8B6F47] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-6"
-              >
-                {submitting ? 'Saving…' : isEdit ? 'Save Changes' : 'Create Product'}
-              </button>
-              <button
                 type="button"
                 onClick={() => navigate('/products')}
                 className="min-h-11 flex-1 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-stone-50 sm:flex-none sm:px-6"
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="min-h-11 flex-1 rounded-lg bg-[#8B6F47] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-6"
+              >
+                {submitting ? 'Saving…' : 'Save'}
               </button>
             </div>
           </form>
