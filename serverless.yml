@@ -83,6 +83,30 @@ functions:
           method: delete
           cors: true
 
+  expenses:
+    handler: backend/expenses/handler.handler
+    events:
+      - http:
+          path: /api/v1/expenses
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/expenses
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: delete
+          cors: true
+
 plugins:
   - serverless-offline
 

@@ -7,6 +7,8 @@ import Products from './pages/Products'
 import ProductForm from './pages/ProductForm'
 import RawProducts from './pages/RawProducts'
 import RawProductForm from './pages/RawProductForm'
+import Expenses from './pages/Expenses'
+import ExpenseForm from './pages/ExpenseForm'
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -23,6 +25,9 @@ const router = createBrowserRouter([
           { path: '/raw-products', element: <RawProducts /> },
           { path: '/raw-products/new', element: <RawProductForm /> },
           { path: '/raw-products/:id/edit', element: <RawProductForm /> },
+          { path: '/expenses', element: <Expenses /> },
+          { path: '/expenses/new', element: <ExpenseForm /> },
+          { path: '/expenses/:id/edit', element: <ExpenseForm /> },
         ],
       },
     ],
