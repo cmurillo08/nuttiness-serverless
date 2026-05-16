@@ -4,12 +4,14 @@ import base64
 import json
 import secrets
 import time
+from contextvars import ContextVar
 from typing import Any
 from aws_lambda_powertools.shared.cookies import Cookie, SameSite
 
 
 SESSION_COOKIE_NAME = "nuttiness_session"
 LEGACY_AUTH_COOKIE_PATH = "/api/v1/auth/"
+_REQUEST_HEADERS: ContextVar[dict[str, Any]] = ContextVar("request_headers", default={})
 
 def sign_token(username: str, secret: str) -> str:
     payload = {"user": username, "iat": int(time.time())}
@@ -36,6 +38,31 @@ def verify_token(token: str, secret: str) -> str:
     if not isinstance(payload, dict) or "user" not in payload:
         raise ValueError("Invalid payload structure")
     return payload["user"]
+
+
+def set_request_headers(headers: dict[str, Any] | None) -> None:
+    _REQUEST_HEADERS.set(headers or {})
+
+
+def require_auth() -> bool:
+    headers = _REQUEST_HEADERS.get() or {}
+    cookie_header = headers.get("cookie") or headers.get("Cookie") or ""
+    token = None
+    for part in cookie_header.split(";"):
+        if part.strip().startswith(f"{SESSION_COOKIE_NAME}="):
+            token = part.strip().split("=", 1)[1]
+            break
+    if not token:
+        return False
+
+    import os
+
+    session_secret = os.environ.get("SESSION_SECRET", "")
+    try:
+        verify_token(token, session_secret)
+        return True
+    except Exception:
+        return False
 
 def make_session_cookie(token: str, secure: bool = False, path: str = "/") -> Cookie:
     # Omit Secure in local HTTP dev. Enable it in production once HTTPS is in place.

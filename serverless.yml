@@ -107,6 +107,62 @@ functions:
           method: delete
           cors: true
 
+  sales:
+    handler: backend/sales/handler.handler
+    events:
+      - http:
+          path: /api/v1/sales
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/sales
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/transition
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items/{item_id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items/{item_id}
+          method: delete
+          cors: true
+
+  customers:
+    handler: backend/customers/handler.handler
+    events:
+      - http:
+          path: /api/v1/customers
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/customers
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: delete
+          cors: true
+
 plugins:
   - serverless-offline
 

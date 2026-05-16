@@ -9,6 +9,11 @@ import RawProducts from './pages/RawProducts'
 import RawProductForm from './pages/RawProductForm'
 import Expenses from './pages/Expenses'
 import ExpenseForm from './pages/ExpenseForm'
+import Customers from './pages/Customers'
+import CustomerForm from './pages/CustomerForm'
+import Sales from './pages/Sales'
+import SaleForm from './pages/SaleForm'
+import SaleDetail from './pages/SaleDetail'
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -28,6 +33,12 @@ const router = createBrowserRouter([
           { path: '/expenses', element: <Expenses /> },
           { path: '/expenses/new', element: <ExpenseForm /> },
           { path: '/expenses/:id/edit', element: <ExpenseForm /> },
+          { path: '/customers', element: <Customers /> },
+          { path: '/customers/new', element: <CustomerForm /> },
+          { path: '/customers/:id/edit', element: <CustomerForm /> },
+          { path: '/sales', element: <Sales /> },
+          { path: '/sales/new', element: <SaleForm /> },
+          { path: '/sales/:id', element: <SaleDetail /> },
         ],
       },
     ],
