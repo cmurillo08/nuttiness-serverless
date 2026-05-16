@@ -34,11 +34,11 @@ function DashboardIcon({ className }) {
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true, icon: DashboardIcon },
-  { to: '/sales', label: 'Sales', disabled: true, icon: SalesIcon },
+  { to: '/sales', label: 'Sales', icon: SalesIcon },
   { to: '/expenses', label: 'Expenses', icon: ExpensesIcon },
   { to: '/raw-products', label: 'Raw Products', icon: RawProductsIcon },
   { to: '/products', label: 'Products', icon: ProductsIcon },
-  { to: '/customers', label: 'Customers', disabled: true, icon: CustomersIcon },
+  { to: '/customers', label: 'Customers', icon: CustomersIcon },
   { to: '/reports', label: 'Reports', disabled: true, icon: ReportsIcon },
 ]
 

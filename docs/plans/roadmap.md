@@ -145,7 +145,7 @@ frontend/
 | 1 — Auth | ✅ Complete |
 | 2 — Products | ✅ Complete |
 | 3 — Expenses | ✅ Complete |
-| 4 — Sales & Customers | 🔲 Not started |
+| 4 — Sales & Customers | ✅ Complete |
 | 5 — Reporting | 🔲 Not started |
 | 6 — Deployment | 🔲 Not started |
 
