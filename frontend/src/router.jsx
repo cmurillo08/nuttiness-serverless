@@ -14,6 +14,7 @@ import CustomerForm from './pages/CustomerForm'
 import Sales from './pages/Sales'
 import SaleForm from './pages/SaleForm'
 import SaleDetail from './pages/SaleDetail'
+import Reports from './pages/Reports'
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
           { path: '/sales', element: <Sales /> },
           { path: '/sales/new', element: <SaleForm /> },
           { path: '/sales/:id', element: <SaleDetail /> },
+          { path: '/reports', element: <Reports /> },
         ],
       },
     ],
