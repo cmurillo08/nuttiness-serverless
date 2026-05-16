@@ -55,7 +55,8 @@ One Lambda function per domain group to keep deployment units manageable:
 | 3 | Expenses | phase-3-expenses | Expenses Lambda (CRUD), React expense pages |
 | 4 | Sales & Customers | phase-4-sales + phase-5-customers | Sales Lambda, Customers Lambda, OrderBuilder, customer pages |
 | 5 | Reporting | phase-6-reporting | Reports Lambda (aggregates), React dashboard + reports page |
-| 6 | Deployment | phase-0-environment (IaC) | S3 + CloudFront hosting, production deploy, env var management |
+| 6 | UI Alignment | phase-10-rebrand | Káru rebrand: color tokens, logo, brand strings, body background |
+| 7 | Deployment | phase-0-environment (IaC) | S3 + CloudFront hosting, production deploy, env var management |
 
 ---
 
@@ -95,7 +96,12 @@ One Lambda function per domain group to keep deployment units manageable:
 - Return computed summaries from Lambda
 - Build a React dashboard with stats cards
 
-### Phase 6 — Deployment
+### Phase 6 — UI Alignment
+- Audit visual/branding differences between nuttiness and nuttiness-serverless
+- Define Tailwind v4 `@theme` color tokens (replacing hardcoded hex values)
+- Apply the Káru rebrand: logo, color palette, brand strings, tagline
+
+### Phase 7 — Deployment
 - Deploy the React SPA to S3 + CloudFront using Serverless Framework
 - Manage `DATABASE_URL` and secrets in Lambda via SSM or env
 - Run a full end-to-end smoke test against the live stack
@@ -146,8 +152,9 @@ frontend/
 | 2 — Products | ✅ Complete |
 | 3 — Expenses | ✅ Complete |
 | 4 — Sales & Customers | ✅ Complete |
-| 5 — Reporting | 🔲 Not started |
-| 6 — Deployment | 🔲 Not started |
+| 5 — Reporting | ✅ Complete |
+| 6 — UI Alignment | 🔲 Not started |
+| 7 — Deployment | 🔲 Not started |
 
 ---
 

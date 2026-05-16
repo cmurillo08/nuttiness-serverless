@@ -163,6 +163,14 @@ functions:
           method: delete
           cors: true
 
+  reports:
+    handler: backend/reports/handler.handler
+    events:
+      - http:
+          path: /api/v1/reports/summary
+          method: get
+          cors: true
+
 plugins:
   - serverless-offline
 

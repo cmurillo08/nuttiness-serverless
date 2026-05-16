@@ -28,18 +28,13 @@ function CustomersIcon({ className }) {
 function ReportsIcon({ className }) {
   return <IconBase className={className}><path d="M6 20V10" /><path d="M12 20V4" /><path d="M18 20v-7" /></IconBase>
 }
-function DashboardIcon({ className }) {
-  return <IconBase className={className}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></IconBase>
-}
-
 const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', end: true, icon: DashboardIcon },
   { to: '/sales', label: 'Sales', icon: SalesIcon },
   { to: '/expenses', label: 'Expenses', icon: ExpensesIcon },
   { to: '/raw-products', label: 'Raw Products', icon: RawProductsIcon },
   { to: '/products', label: 'Products', icon: ProductsIcon },
   { to: '/customers', label: 'Customers', icon: CustomersIcon },
-  { to: '/reports', label: 'Reports', disabled: true, icon: ReportsIcon },
+  { to: '/reports', label: 'Reports', icon: ReportsIcon },
 ]
 
 function navClass({ isActive }) {
