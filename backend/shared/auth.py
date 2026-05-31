@@ -12,6 +12,7 @@ from aws_lambda_powertools.shared.cookies import Cookie, SameSite
 SESSION_COOKIE_NAME = "nuttiness_session"
 LEGACY_AUTH_COOKIE_PATH = "/api/v1/auth/"
 _REQUEST_HEADERS: ContextVar[dict[str, Any]] = ContextVar("request_headers", default={})
+_REQUEST_COOKIES: ContextVar[list[str]] = ContextVar("request_cookies", default=[])
 
 def sign_token(username: str, secret: str) -> str:
     payload = {"user": username, "iat": int(time.time())}
@@ -42,16 +43,40 @@ def verify_token(token: str, secret: str) -> str:
 
 def set_request_headers(headers: dict[str, Any] | None) -> None:
     _REQUEST_HEADERS.set(headers or {})
+    _REQUEST_COOKIES.set([])
+
+
+def set_request_context(headers: dict[str, Any] | None, cookies: list[str] | None) -> None:
+    _REQUEST_HEADERS.set(headers or {})
+    _REQUEST_COOKIES.set(cookies or [])
+
+
+def extract_session_token(
+    headers: dict[str, Any] | None = None,
+    cookies: list[str] | None = None,
+) -> str | None:
+    cookie_sources: list[str] = []
+
+    if cookies:
+        cookie_sources.extend(cookies)
+
+    if headers:
+        cookie_header = headers.get("cookie") or headers.get("Cookie")
+        if cookie_header:
+            cookie_sources.append(cookie_header)
+
+    for cookie_source in cookie_sources:
+        for part in cookie_source.split(";"):
+            if part.strip().startswith(f"{SESSION_COOKIE_NAME}="):
+                return part.strip().split("=", 1)[1]
+
+    return None
 
 
 def require_auth() -> bool:
     headers = _REQUEST_HEADERS.get() or {}
-    cookie_header = headers.get("cookie") or headers.get("Cookie") or ""
-    token = None
-    for part in cookie_header.split(";"):
-        if part.strip().startswith(f"{SESSION_COOKIE_NAME}="):
-            token = part.strip().split("=", 1)[1]
-            break
+    cookies = _REQUEST_COOKIES.get() or []
+    token = extract_session_token(headers=headers, cookies=cookies)
     if not token:
         return False
 

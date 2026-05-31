@@ -8,7 +8,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from backend.reports.db import get_financial_summary
 from backend.reports.models import FinancialSummaryResponse
-from backend.shared.auth import require_auth, set_request_headers
+from backend.shared.auth import require_auth, set_request_context
 from backend.shared.db import get_connection
 
 logger = Logger()
@@ -32,7 +32,10 @@ def _json_response(data: dict, status_code: int = 200) -> Response:
 
 
 def _ensure_auth() -> Response | None:
-    set_request_headers(dict(app.current_event.headers or {}))
+    set_request_context(
+        dict(app.current_event.headers or {}),
+        list(getattr(app.current_event, "cookies", []) or []),
+    )
     if not require_auth():
         return _json_response({"error": "unauthorized"}, 401)
     return None

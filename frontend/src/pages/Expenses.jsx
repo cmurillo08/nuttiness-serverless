@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listExpenses, deleteExpense } from '../api/expenses'
 import { listRawProducts } from '../api/products'
+import Pagination from '../components/Pagination'
 
 function EditIcon({ className }) {
   return (
@@ -39,7 +40,7 @@ function SpinnerIcon({ className }) {
 function Spinner() {
   return (
     <div className="flex items-center justify-center py-12">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
     </div>
   )
 }
@@ -68,7 +69,7 @@ export default function Expenses() {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [limit] = useState(25)
+  const [limit, setLimit] = useState(25)
   const [page, setPage] = useState(1)
   const [rawProducts, setRawProducts] = useState([])
   const [rawProductFilter, setRawProductFilter] = useState('')
@@ -129,11 +130,11 @@ export default function Expenses() {
     <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-[#8B6F47]">Expenses</h1>
+        <h1 className="text-2xl font-semibold text-primary">Expenses</h1>
         <button
           type="button"
           onClick={() => navigate('/expenses/new')}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#8B6F47] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
         >
           New Expense
         </button>
@@ -141,10 +142,11 @@ export default function Expenses() {
 
       {/* Filter */}
       <div className="sm:max-w-sm">
+        <label className="mb-1 block text-sm font-medium text-slate-700">Raw Product</label>
         <select
           value={rawProductFilter}
           onChange={handleFilterChange}
-          className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+          className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
           aria-label="Filter by raw product"
         >
           <option value="">All raw products</option>
@@ -208,7 +210,7 @@ export default function Expenses() {
                   <button
                     type="button"
                     onClick={() => navigate(`/expenses/${expense.id}/edit`)}
-                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#8B6F47]/30 px-3 text-sm font-medium text-[#8B6F47]"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-primary/30 px-3 text-sm font-medium text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                     aria-label="Edit expense"
                   >
                     <EditIcon className="h-4 w-4" />
@@ -218,7 +220,7 @@ export default function Expenses() {
                     type="button"
                     onClick={() => handleDelete(expense.id)}
                     disabled={deleting === expense.id}
-                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 disabled:opacity-50"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/60"
                     aria-label="Delete expense"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -230,34 +232,34 @@ export default function Expenses() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm lg:block">
+          <div className="hidden overflow-auto max-h-[calc(100vh-300px)] rounded-lg border border-stone-200 bg-white shadow-sm lg:block">
             <table className="min-w-full divide-y divide-stone-200 text-sm">
-              <thead className="bg-stone-50">
+              <thead className="sticky top-0 z-10 bg-stone-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-slate-600">Purchased At</th>
-                  <th className="px-4 py-3 text-left font-medium text-slate-600">Raw Product</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Quantity</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Cost</th>
-                  <th className="px-4 py-3 text-left font-medium text-slate-600">Notes</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Actions</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Purchased At</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Raw Product</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Quantity</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Cost</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600 hidden sm:table-cell">Notes</th>
+                  <th scope="col" className="relative px-4 py-3 text-right text-sm font-medium text-slate-600">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
                 {items.map((expense) => (
-                  <tr key={expense.id} className="hover:bg-stone-50">
-                    <td className="px-4 py-3 text-slate-700">{formatDate(expense.purchased_at)}</td>
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                  <tr key={expense.id} className="hover:bg-stone-50/50">
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-stone-500">{formatDate(expense.purchased_at)}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-stone-900">
                       {expense.raw_product?.name ?? expense.raw_product_id}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-700">{expense.quantity}</td>
-                    <td className="px-4 py-3 text-right text-slate-700">{formatCost(expense.cost)}</td>
-                    <td className="max-w-xs truncate px-4 py-3 text-slate-600">{expense.notes ?? '—'}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="whitespace-nowrap px-4 py-3 text-left text-sm text-stone-500">{expense.quantity}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-left text-sm text-stone-500">{formatCost(expense.cost)}</td>
+                    <td className="px-4 py-3 text-sm text-stone-500 truncate max-w-xs hidden sm:table-cell">{expense.notes ?? '—'}</td>
+                    <td className="relative whitespace-nowrap px-4 py-3 text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => navigate(`/expenses/${expense.id}/edit`)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                           aria-label="Edit expense"
                         >
                           <EditIcon className="h-4 w-4" />
@@ -266,7 +268,7 @@ export default function Expenses() {
                           type="button"
                           onClick={() => handleDelete(expense.id)}
                           disabled={deleting === expense.id}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/60"
                           aria-label="Delete expense"
                         >
                           {deleting === expense.id
@@ -285,29 +287,13 @@ export default function Expenses() {
 
       {/* Pagination */}
       {!loading && total > 0 && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-500">
-            Showing {start}–{end} of {total}
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={!hasPrev}
-              className="min-h-9 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={!hasNext}
-              className="min-h-9 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          total={total}
+          limit={limit}
+          offset={offset}
+          onLimitChange={(newLimit) => { setLimit(newLimit); setPage(1); }}
+          onOffsetChange={(newOffset) => setPage(Math.floor(newOffset / limit) + 1)}
+        />
       )}
     </div>
   )

@@ -10,7 +10,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 import psycopg
 from pydantic import ValidationError
 from backend.shared.db import get_connection
-from backend.shared.auth import verify_token
+from backend.shared.auth import extract_session_token, verify_token
 from backend.expenses import db as expenses_db
 from backend.expenses.models import CreateExpenseRequest, UpdateExpenseRequest
 from backend.shared.pagination import parse_pagination, build_pagination_response
@@ -52,16 +52,10 @@ def serialize_row(row: dict) -> dict:
 
 def require_auth() -> bool:
     all_headers = dict(app.current_event.headers or {})
-    cookie_header = (
-        app.current_event.headers.get("cookie")
-        or app.current_event.headers.get("Cookie")
-        or ""
+    token = extract_session_token(
+        headers=all_headers,
+        cookies=list(getattr(app.current_event, "cookies", []) or []),
     )
-    token = None
-    for part in cookie_header.split(";"):
-        if part.strip().startswith("nuttiness_session="):
-            token = part.strip().split("=", 1)[1]
-            break
     if not token:
         return False
     session_secret = os.environ.get("SESSION_SECRET", "")

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { logout } from '../api/auth'
 
 function IconBase({ className, children }) {
@@ -40,10 +40,10 @@ const NAV_ITEMS = [
 function navClass({ isActive }) {
   return [
     'flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors duration-150',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B6F47]/60',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60',
     isActive
-      ? 'bg-[#8B6F47] text-white shadow-sm'
-      : 'text-slate-700 hover:bg-white hover:text-[#8B6F47]',
+      ? 'bg-primary text-white shadow-sm'
+      : 'text-slate-700 hover:bg-white hover:text-primary',
   ].join(' ')
 }
 
@@ -82,11 +82,8 @@ function SidebarContent({ onNavigate, onLogout, loggingOut, onClose }) {
   return (
     <div className="flex h-full flex-col px-3 py-4">
       <div className="mb-6 flex items-center gap-3 rounded-3xl border border-white/70 bg-white/70 px-3 py-3 shadow-sm">
-        <img src="/nuttiness-logo.png" alt="Nuttiness" className="h-10 w-10 shrink-0 rounded-xl object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-        <div className="min-w-0">
-          <div className="truncate text-base font-semibold text-[#8B6F47]">Nuttiness</div>
-          <div className="truncate text-xs text-[#8B6F47]/70">Sabor que Enloquece</div>
-        </div>
+        <img src="/karu-logo.png" alt="Karú" className="h-8 w-auto shrink-0 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+        <div className="truncate text-sm text-primary/90">Disfrutá sin culpa</div>
       </div>
 
       <SidebarNav onNavigate={onNavigate} />
@@ -95,7 +92,7 @@ function SidebarContent({ onNavigate, onLogout, loggingOut, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:text-[#8B6F47]"
+          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:text-primary"
         >
           Close
         </button>
@@ -105,7 +102,7 @@ function SidebarContent({ onNavigate, onLogout, loggingOut, onClose }) {
         type="button"
         onClick={onLogout}
         disabled={loggingOut}
-        className="mt-2 flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:text-[#8B6F47] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loggingOut ? 'Signing out...' : 'Logout'}
       </button>
@@ -133,11 +130,11 @@ export default function AppShell() {
     <div className="min-h-screen bg-stone-50 text-slate-900">
       <div className="flex min-h-screen">
         {/* Mobile top bar */}
-        <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-stone-200 bg-[#f6efe1] px-4 lg:hidden">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-stone-200 bg-brand-bg px-4 lg:hidden">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/70 bg-white text-[#8B6F47] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B6F47]/60"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/70 bg-white text-primary shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
             aria-label="Open navigation"
           >
             <svg
@@ -151,10 +148,10 @@ export default function AppShell() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-          <img src="/nuttiness-logo.png" alt="Nuttiness" className="h-7 w-7 rounded-lg object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-          <span className="text-sm font-semibold text-[#8B6F47]">Nuttiness</span>
-          {/* spacer to balance the hamburger */}
-          <div className="h-10 w-10" aria-hidden />
+          <Link to="/sales" className="flex flex-1 items-center justify-center gap-2">
+            <img src="/karu-logo.png" alt="Karú" className="h-7 w-auto shrink-0 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+            <span className="text-sm text-primary/90">Disfrutá sin culpa</span>
+          </Link>
         </header>
 
         {/* Mobile overlay backdrop */}
@@ -170,7 +167,7 @@ export default function AppShell() {
         {/* Mobile drawer sidebar */}
         <aside
           className={[
-            'fixed inset-y-0 left-0 z-50 w-72 border-r border-stone-200 bg-[#f6efe1]',
+            'fixed inset-y-0 left-0 z-50 w-72 border-r border-stone-200 bg-brand-bg',
             'transition-transform duration-200 lg:hidden',
             mobileOpen ? 'translate-x-0' : '-translate-x-full',
           ].join(' ')}
@@ -184,7 +181,7 @@ export default function AppShell() {
         </aside>
 
         {/* Desktop persistent sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-stone-200 bg-[#f6efe1] lg:block">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-stone-200 bg-brand-bg lg:block">
           <SidebarContent
             onLogout={handleLogout}
             loggingOut={loggingOut}
