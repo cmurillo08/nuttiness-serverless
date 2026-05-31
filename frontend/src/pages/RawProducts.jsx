@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listRawProducts, deleteRawProduct } from '../api/products'
+import Pagination from '../components/Pagination'
 
 function EditIcon({ className }) {
   return (
@@ -38,7 +39,7 @@ function SpinnerIcon({ className }) {
 function Spinner() {
   return (
     <div className="flex items-center justify-center py-12">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
     </div>
   )
 }
@@ -49,7 +50,7 @@ export default function RawProducts() {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [limit] = useState(25)
+  const [limit, setLimit] = useState(25)
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState(null)
@@ -98,11 +99,11 @@ export default function RawProducts() {
     <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-[#8B6F47]">Raw Products</h1>
+        <h1 className="text-2xl font-semibold text-primary">Raw Products</h1>
         <button
           type="button"
           onClick={() => navigate('/raw-products/new')}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#8B6F47] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 sm:w-auto"
         >
           New Raw Product
         </button>
@@ -115,7 +116,7 @@ export default function RawProducts() {
           placeholder="Search by name…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+          className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
       </div>
 
@@ -149,7 +150,7 @@ export default function RawProducts() {
                     <dd className="text-sm text-slate-700">{product.unit}</dd>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Purchase Price</dt>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Price</dt>
                     <dd className="text-sm text-slate-700">
                       {product.price != null
                         ? Number(product.price).toLocaleString('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 })
@@ -163,13 +164,13 @@ export default function RawProducts() {
                 </dl>
                 <div className="mt-3 flex gap-2 border-t border-stone-100 pt-3">
                   <button type="button" onClick={() => navigate(`/raw-products/${product.id}/edit`)}
-                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#8B6F47]/30 px-3 text-sm font-medium text-[#8B6F47]"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-primary/30 px-3 text-sm font-medium text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                     aria-label={`Edit ${product.name}`}>
                     <EditIcon className="h-4 w-4" /> Edit
                   </button>
                   <button type="button" onClick={() => handleDelete(product.id, product.name)}
                     disabled={deleting === product.id}
-                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 disabled:opacity-50"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/60"
                     aria-label={`Delete ${product.name}`}>
                     <TrashIcon className="h-4 w-4" />
                     {deleting === product.id ? '…' : 'Delete'}
@@ -180,25 +181,25 @@ export default function RawProducts() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm lg:block">
+          <div className="hidden overflow-auto max-h-[calc(100vh-280px)] rounded-lg border border-stone-200 bg-white shadow-sm lg:block">
             <table className="min-w-full divide-y divide-stone-200 text-sm">
-              <thead className="bg-stone-50">
+              <thead className="sticky top-0 z-10 bg-stone-50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-slate-600">Name</th>
-                  <th className="px-4 py-3 text-left font-medium text-slate-600">Unit</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Purchase Price</th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-600 sm:table-cell">
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Name</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Unit</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600">Price</th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-slate-600 hidden sm:table-cell">
                     Supplier
                   </th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Actions</th>
+                  <th scope="col" className="relative px-4 py-3 text-right text-sm font-medium text-slate-600">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
                 {filtered.map((product) => (
-                  <tr key={product.id} className="hover:bg-stone-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{product.name}</td>
-                    <td className="px-4 py-3 text-slate-600">{product.unit}</td>
-                    <td className="px-4 py-3 text-right text-slate-700">
+                  <tr key={product.id} className="hover:bg-stone-50/50">
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-stone-900">{product.name}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-stone-500">{product.unit}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-left text-sm text-stone-500">
                       {product.price != null
                         ? Number(product.price).toLocaleString('es-CR', {
                             style: 'currency',
@@ -207,15 +208,15 @@ export default function RawProducts() {
                           })
                         : '—'}
                     </td>
-                    <td className="hidden px-4 py-3 text-slate-600 sm:table-cell">
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-stone-500 hidden sm:table-cell">
                       {product.supplier || '—'}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="relative whitespace-nowrap px-4 py-3 text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => navigate(`/raw-products/${product.id}/edit`)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                           aria-label={`Edit ${product.name}`}
                         >
                           <EditIcon className="h-4 w-4" />
@@ -224,7 +225,7 @@ export default function RawProducts() {
                           type="button"
                           onClick={() => handleDelete(product.id, product.name)}
                           disabled={deleting === product.id}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/60"
                           aria-label={`Delete ${product.name}`}
                         >
                           {deleting === product.id ? <SpinnerIcon className="h-4 w-4 animate-spin" /> : <TrashIcon className="h-4 w-4" />}
@@ -241,29 +242,13 @@ export default function RawProducts() {
 
       {/* Pagination */}
       {!loading && total > 0 && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-500">
-            Showing {start}–{end} of {total}
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setOffset(Math.max(0, offset - limit))}
-              disabled={!hasPrev}
-              className="min-h-9 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              onClick={() => setOffset(offset + limit)}
-              disabled={!hasNext}
-              className="min-h-9 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          total={total}
+          limit={limit}
+          offset={offset}
+          onLimitChange={(newLimit) => { setLimit(newLimit); setOffset(0); }}
+          onOffsetChange={setOffset}
+        />
       )}
     </div>
   )

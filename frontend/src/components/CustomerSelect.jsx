@@ -72,7 +72,7 @@ export default function CustomerSelect({ value, onChange, placeholder = "Select 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex min-h-11 w-full items-center justify-between rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+        className="flex min-h-11 w-full items-center justify-between rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
       >
         <span className={selectedCustomer ? "text-slate-900" : "text-slate-400"}>
           {selectedCustomer ? selectedCustomer.name : placeholder}
@@ -90,7 +90,7 @@ export default function CustomerSelect({ value, onChange, placeholder = "Select 
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
               placeholder="Search customers..."
-              className="w-full rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 text-sm outline-none focus:border-[#8B6F47] focus:ring-1 focus:ring-[#8B6F47]"
+              className="w-full rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               autoFocus
             />
           </div>
@@ -123,7 +123,7 @@ export default function CustomerSelect({ value, onChange, placeholder = "Select 
                         onChange(c.id)
                         setIsOpen(false)
                       }}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-stone-50 ${String(value) === String(c.id) ? "bg-[#8B6F47]/10 text-[#8B6F47] font-medium" : "text-slate-900"}`}
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-stone-50 ${String(value) === String(c.id) ? "bg-primary-50 text-primary font-medium" : "text-slate-900"}`}
                     >
                       {c.name}
                     </button>
@@ -141,13 +141,13 @@ export default function CustomerSelect({ value, onChange, placeholder = "Select 
                 onChange={(e) => setNewCustomerName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomer())}
                 placeholder="New customer name"
-                className="w-full rounded-md border border-stone-200 px-3 py-1.5 text-sm outline-none focus:border-[#8B6F47] focus:ring-1 focus:ring-[#8B6F47]"
+                className="w-full rounded-md border border-stone-200 px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               />
               <button
                 type="button"
                 onClick={handleAddCustomer}
                 disabled={creating || !newCustomerName.trim()}
-                className="rounded-md bg-[#8B6F47] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#7a603c] disabled:opacity-50 min-w-[60px]"
+                className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 min-w-[60px]"
               >
                 {creating ? "..." : "Add"}
               </button>

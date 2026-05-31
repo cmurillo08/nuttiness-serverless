@@ -112,14 +112,14 @@ export default function SaleForm() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
       </div>
     )
   }
 
   return (
     <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-      <h1 className="text-2xl font-semibold text-[#8B6F47]">New Sale</h1>
+      <h1 className="text-2xl font-semibold text-primary">New Sale</h1>
 
       <form onSubmit={handleSubmit} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm sm:p-6 space-y-6">
         {error && (
@@ -146,7 +146,7 @@ export default function SaleForm() {
               id="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+              className="min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               <option value="ordered">Ordered</option>
               <option value="prepared">Prepared</option>
@@ -167,7 +167,7 @@ export default function SaleForm() {
                   <select
                     value={item.prepared_product_id}
                     onChange={(e) => handleItemChange(index, 'prepared_product_id', e.target.value)}
-                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     required
                   >
                     <option value="">Select a product...</option>
@@ -185,7 +185,7 @@ export default function SaleForm() {
                     step="0.01"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     required
                   />
                 </div>
@@ -198,7 +198,7 @@ export default function SaleForm() {
                     step="0.01"
                     value={item.unit_price}
                     onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
-                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+                    className="min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     required
                   />
                 </div>
@@ -229,7 +229,7 @@ export default function SaleForm() {
             <button
               type="button"
               onClick={addLineItem}
-              className="text-sm font-semibold text-[#8B6F47] hover:text-[#7A603C]"
+              className="text-sm font-semibold text-primary hover:text-primary/80"
             >
               + Add another line
             </button>
@@ -252,9 +252,9 @@ export default function SaleForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="min-h-11 rounded-lg bg-[#8B6F47] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+            className="min-h-11 rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 disabled:opacity-50"
           >
-            {submitting ? 'Creating...' : 'Create Sale'}
+            {submitting ? 'Creating...' : 'Save'}
           </button>
         </div>
       </form>

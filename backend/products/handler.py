@@ -10,7 +10,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 import psycopg
 from psycopg.errors import UniqueViolation
 from backend.shared.db import get_connection
-from backend.shared.auth import verify_token
+from backend.shared.auth import extract_session_token, verify_token
 from backend.products import db as products_db
 from backend.products.models import (
     CreatePreparedProductRequest,
@@ -60,17 +60,12 @@ def require_auth() -> bool:
     """Returns True if the session cookie is valid, False otherwise."""
     all_headers = dict(app.current_event.headers or {})
     logger.info("DEBUG require_auth headers", extra={"headers": all_headers})
-    cookie_header = (
-        app.current_event.headers.get("cookie")
-        or app.current_event.headers.get("Cookie")
-        or ""
-    )
+    cookie_header = app.current_event.headers.get("cookie") or app.current_event.headers.get("Cookie") or ""
     logger.info("DEBUG cookie_header value", extra={"cookie_header": cookie_header})
-    token = None
-    for part in cookie_header.split(";"):
-        if part.strip().startswith("nuttiness_session="):
-            token = part.strip().split("=", 1)[1]
-            break
+    token = extract_session_token(
+        headers=all_headers,
+        cookies=list(getattr(app.current_event, "cookies", []) or []),
+    )
     if not token:
         return False
     session_secret = os.environ.get("SESSION_SECRET", "")

@@ -123,13 +123,13 @@ export default function ExpenseForm() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
       </div>
     )
   }
 
   const inputClass =
-    'min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30'
+    'min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30'
   const inputErrClass =
     'min-h-11 w-full rounded-lg border border-red-400 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-400/30'
 
@@ -139,7 +139,7 @@ export default function ExpenseForm() {
 
   return (
     <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-      <h1 className="text-2xl font-semibold text-[#8B6F47]">
+      <h1 className="text-2xl font-semibold text-primary">
         {isEdit ? 'Edit Expense' : 'New Expense'}
       </h1>
 
@@ -248,7 +248,7 @@ export default function ExpenseForm() {
                 rows={3}
                 value={fields.notes}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#8B6F47] focus:outline-none focus:ring-2 focus:ring-[#8B6F47]/30"
+                className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                 placeholder="Optional notes about this purchase…"
               />
             </div>
@@ -265,7 +265,7 @@ export default function ExpenseForm() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="min-h-11 flex-1 rounded-lg bg-[#8B6F47] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-6"
+                className="min-h-11 flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-6"
               >
                 {submitting ? 'Saving…' : 'Save'}
               </button>

@@ -5,7 +5,7 @@ import Amount from '../components/Amount'
 function Spinner() {
   return (
     <div className="flex items-center justify-center py-12">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
     </div>
   )
 }
@@ -44,7 +44,7 @@ export default function Reports() {
   return (
     <div className="space-y-6 p-4 sm:p-6">
       {/* Page header */}
-      <h1 className="text-2xl font-semibold text-[#8B6F47]">Reports</h1>
+      <h1 className="text-2xl font-semibold text-primary">Reports</h1>
 
       {loading && <Spinner />}
 

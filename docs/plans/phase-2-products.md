@@ -326,7 +326,7 @@ Used for both create (`/products/new`) and edit (`/products/:id/edit`).
 
 ### `frontend/src/pages/RawProducts.jsx`
 
-Same structure as `Products.jsx`. Columns: `Name`, `Unit`, `Purchase Price`, `Supplier`, actions.
+Same structure as `Products.jsx`. Columns: `Name`, `Unit`, `Price`, `Supplier`, actions.
 
 ---
 
@@ -337,7 +337,7 @@ Create / edit form for raw products.
 - Fields:
   - **Name** — text, required
   - **Unit** — text, required
-  - **Purchase Price** — number input, required, min 0
+  - **Price** — number input, required, min 0
   - **Supplier** — text, optional
 - On success: navigate to `/raw-products`
 

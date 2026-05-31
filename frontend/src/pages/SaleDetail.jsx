@@ -78,7 +78,7 @@ export default function SaleDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-[#8B6F47]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-primary" />
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function SaleDetail() {
         <div className="rounded-xl bg-red-50 p-4">
           <p className="text-sm font-medium text-red-800">{error}</p>
         </div>
-        <button className="mt-4 text-[#8B6F47]" onClick={() => navigate('/sales')}>&larr; Back to sales</button>
+        <button className="mt-4 text-primary" onClick={() => navigate('/sales')}>&larr; Back to sales</button>
       </div>
     )
   }
@@ -99,7 +99,7 @@ export default function SaleDetail() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <button onClick={() => navigate('/sales')} className="text-sm text-stone-500 hover:text-[#8B6F47] mb-4 inline-flex items-center">
+        <button onClick={() => navigate('/sales')} className="text-sm text-stone-500 hover:text-primary mb-4 inline-flex items-center">
           &larr; Back to Sales
         </button>
       </div>
@@ -188,7 +188,7 @@ export default function SaleDetail() {
             <button
               onClick={() => handleTransition('prepared')}
               disabled={transitioning}
-              className="inline-flex justify-center rounded-xl bg-[#8B6F47] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#7A603C] disabled:opacity-50"
+              className="inline-flex justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 disabled:opacity-50"
             >
               Mark as Prepared
             </button>
@@ -198,7 +198,7 @@ export default function SaleDetail() {
             <button
               onClick={() => handleTransition('delivered')}
               disabled={transitioning}
-              className="inline-flex justify-center rounded-xl bg-[#8B6F47] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#7A603C] disabled:opacity-50"
+              className="inline-flex justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 disabled:opacity-50"
             >
               Mark as Delivered
             </button>

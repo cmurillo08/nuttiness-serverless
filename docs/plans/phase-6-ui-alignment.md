@@ -101,6 +101,48 @@ The nuttiness `EntityTable` component renders a responsive dual-mode layout:
 
 `Sales.jsx` and `Customers.jsx` currently render a plain `overflow-x-auto` table at all breakpoints. On mobile, columns get clipped or force horizontal scroll — no readable card view.
 
+### 2.8 Pagination Component Parity
+
+The shared pagination block in `nuttiness-serverless` is visually and structurally different from `nuttiness/components/Pagination.jsx`.
+
+Required parity points:
+- Summary row: "Showing X to Y of Z"
+- Previous/Next controls with centered page indicator
+- `Items per page` select on `sm+`
+- Container styling parity (neutral card background + border + spacing)
+
+### 2.9 Form Styling Drift
+
+Create/edit form pages are not consistently using the rebrand token classes and spacing patterns already used in the updated Login page and monolith forms.
+
+This phase must normalize form surfaces, labels, inputs, select/textarea fields, focus states, action buttons, and error banners to the same token-based style language (`primary`, `brand-bg`, etc.) across all CRUD form pages.
+
+### 2.10 Customers List Header + Search
+
+The Customers list page is missing the top header/search block used in `nuttiness`:
+- Title row with `Customers` heading and `New` action button
+- Search input (`Search by name`) in the header area
+- Search behavior filters the currently loaded customer list by customer name (client-side)
+
+### 2.11 Sales Transition Action Colors
+
+`SaleDetail` transition actions are not fully aligned with monolith token usage and status-action color mapping.
+
+Required parity points:
+- `ordered -> prepared`: primary token button (`bg-primary`)
+- `prepared -> delivered`: primary token button (`bg-primary`)
+- `delivered -> paid`: success green button (`bg-green-600`)
+- Cancel action: neutral outlined button (`bg-white` + `ring-stone-300`), not destructive red fill
+- Remove remaining hardcoded legacy brand hex values in sale detail action and navigation controls
+
+### 2.12 List Action Icon Parity
+
+Action columns across list pages must use a consistent icon and color system matching monolith patterns:
+- View/Edit icons use primary token emphasis
+- Delete icon uses red emphasis
+- Hover and focus states are consistent across all list pages
+- Mobile action chips and desktop icon-only actions use the same semantic color mapping
+
 ---
 
 ## 3. Scope
@@ -117,12 +159,18 @@ The nuttiness `EntityTable` component renders a responsive dual-mode layout:
 - Update `AppShell.jsx` mobile header: match nuttiness layout (logo + tagline inline, no separate text span)
 - **Sticky table layout on desktop** for all 5 list pages (`Sales`, `Expenses`, `Products`, `RawProducts`, `Customers`)
 - **Mobile card layout for `Sales.jsx` and `Customers.jsx`** (the 3 other pages already have this)
+- **Pagination component parity**: align shared `Pagination` visual structure and behavior with monolith
+- **Form styling parity**: apply token-based rebrand styling consistently across all create/edit form pages
+- **Customers header + search parity** on `Customers.jsx` (heading, new button, search input by name)
+- **Sales transition button parity** on `SaleDetail.jsx` (status-action color mapping and token usage)
+- **List action icon parity** across list pages (icon set + color semantics + hover/focus states)
+- **PWA manifest and app icons:** copy `manifest.json` + `public/icons/` from nuttiness, add `<link rel="manifest">` + `<meta name="theme-color">` to `index.html`
 - Roadmap update: mark Phase 6 as complete
 
 ### Excluded
 
 - Sidebar **collapse** feature (nuttiness desktop has a collapsible sidebar — this is a UX feature, not in scope)
-- PWA manifest / meta tags (not applicable to Vite SPA in this phase)
+- PWA manifest / meta tags (not applicable to Vite SPA in this phase — **moved to Included**)
 - Any new pages or routes
 - Any backend changes
 
@@ -281,6 +329,79 @@ Action button: **View** → `<Link to={/sales/${item.id}}>` with `EyeIcon` (alre
 
 Action buttons: **Edit** → `navigate(/customers/${item.id}/edit)` and **Delete** → `handleDelete(item.id)` (both already in the existing table rows).
 
+### 5.7 Pagination Component Alignment — `frontend/src/components/Pagination.jsx`
+
+Align serverless pagination to the monolith shared component:
+
+- Keep API (`total`, `limit`, `offset`, `onLimitChange`, `onOffsetChange`) unchanged
+- Match layout: summary (left), controls (center), limit selector (right on `lg`; visible on `sm+`)
+- Match content and math:
+  - `Showing {offset + 1} to {min(offset + limit, total)} of {total}`
+  - `Page {floor(offset / limit) + 1}`
+- Match control states and responsive behavior:
+  - Previous disabled when `offset === 0`
+  - Next disabled when `offset + limit >= total`
+  - Buttons full-width on mobile, intrinsic width on desktop
+
+### 5.8 Form Styling Alignment — CRUD Forms
+
+Apply the rebrand token system and spacing standards to form pages and shared form components used by:
+
+- `Products` (new/edit)
+- `Raw Products` (new/edit)
+- `Expenses` (new/edit)
+- `Customers` (new/edit)
+- `Sales` create/detail edit surfaces where form controls exist
+
+Styling parity requirements:
+- Consistent card shell (`rounded`, `border`, `bg-white`, `shadow-sm`)
+- Label/input/select/textarea stacks with `text-slate-*` and tokenized focus (`focus:border-primary`, `focus:ring-primary/20`)
+- Primary CTA uses `bg-primary`, secondary actions use neutral surfaces
+- Validation and error states use consistent alert pattern
+
+### 5.9 Customers List Header + Search — `frontend/src/pages/Customers.jsx`
+
+Add the missing top block to mirror monolith UX:
+
+- Header row: `Customers` title + `New` button
+- Search row: input placeholder `Search by name`
+- Search behavior: client-side filter on currently fetched `items` by `name` (case-insensitive)
+- Ensure search works for both desktop table and mobile cards (same filtered source array)
+
+### 5.10 Sales Transition Buttons — `frontend/src/pages/SaleDetail.jsx`
+
+Align transition controls to monolith color semantics and token usage:
+
+- `ordered` status:
+  - `Mark as Prepared` uses `bg-primary hover:bg-primary/90`
+- `prepared` status:
+  - `Mark as Delivered` uses `bg-primary hover:bg-primary/90`
+  - `Cancel Sale` uses neutral outlined style (`bg-white ring-1 ring-stone-300 text-stone-900 hover:bg-stone-50`)
+- `delivered` status:
+  - `Mark as Paid` uses `bg-green-600 hover:bg-green-700`
+  - `Cancel Sale` keeps neutral outlined style
+
+Also normalize nearby sale-detail controls to token-based brand classes (remove hardcoded legacy primary hex values from back links/spinners/actions).
+
+### 5.11 List Page Action Icons — `Sales.jsx`, `Expenses.jsx`, `Products.jsx`, `RawProducts.jsx`, `Customers.jsx`
+
+Standardize iconography and action colors in desktop action columns and mobile action chips:
+
+- View action:
+  - Eye icon
+  - Primary emphasis (`text-primary`, hover background `hover:bg-primary/10`)
+- Edit action:
+  - Pencil/Edit icon
+  - Primary emphasis (`text-primary`, hover background `hover:bg-primary/10`)
+- Delete action:
+  - Trash icon
+  - Destructive emphasis (`text-red-600`, hover background `hover:bg-red-50`)
+- Focus-visible rings:
+  - Primary actions: `focus-visible:ring-primary/60`
+  - Delete actions: `focus-visible:ring-red-600/60`
+
+Implementation note: icon shape can remain inline SVGs, but stroke weight and sizing should stay visually consistent (`h-4/w-4` for compact buttons, `h-5/w-5` where already established by table density).
+
 ---
 
 ## 6. Acceptance Criteria
@@ -297,9 +418,20 @@ Action buttons: **Edit** → `navigate(/customers/${item.id}/edit)` and **Delete
 - [ ] No "Nuttiness" brand strings visible in the UI
 - [ ] On desktop (`lg`), all 5 list pages show a sticky `<thead>` that stays pinned while the table body scrolls
 - [ ] Pagination bar is always visible (never scrolls off-screen on desktop)
+- [ ] Shared `Pagination` component matches monolith structure, copy, button states, and responsive behavior
 - [ ] `Sales.jsx` renders mobile cards (`lg:hidden`) with Date, Customer, Total, Status fields + View button
 - [ ] `Customers.jsx` renders mobile cards (`lg:hidden`) with Name, Phone, Notes fields + Edit/Delete buttons
+- [ ] `Customers.jsx` includes header row (`Customers` + `New`) and a `Search by name` input
+- [ ] Customers search filters by customer name (case-insensitive) and applies to both mobile cards and desktop table
+- [ ] All create/edit form pages use token-based rebrand styling (no legacy hardcoded brand hex values)
+- [ ] `SaleDetail.jsx` transition actions match monolith status-action color mapping (primary/primary/green + neutral cancel)
+- [ ] `SaleDetail.jsx` contains no legacy hardcoded primary hex values in transition/navigation controls
+- [ ] All list pages use consistent action icon semantics: view/edit as primary, delete as red
+- [ ] Desktop action icons and mobile action chips have aligned hover/focus treatment across all list pages
 - [ ] `Expenses.jsx`, `Products.jsx`, `RawProducts.jsx` mobile cards unchanged (already working)
+- [ ] `frontend/public/manifest.json` exists with Káru name, `start_url: /sales`, brand colors
+- [ ] `frontend/public/icons/` contains `icon-192.png`, `icon-192-legacy.png`, `icon-512.png`, `icon-512-legacy.png`
+- [ ] `frontend/index.html` has `<link rel="manifest">`, `<meta name="theme-color" content="#3B1F07">`, `<link rel="apple-touch-icon">`, and `<title>Káru</title>`
 - [ ] All 5 list pages use the dual-mode pattern: `space-y-3 lg:hidden` cards + `hidden lg:block` table
 - [ ] Roadmap `phase-6` status updated to ✅ Complete
 
@@ -309,6 +441,12 @@ Action buttons: **Edit** → `navigate(/customers/${item.id}/edit)` and **Delete
 
 ```
 frontend/public/karu-logo.png          (copy from nuttiness/public/)
+frontend/public/manifest.json          (PWA manifest — Káru branding)
+frontend/public/icons/icon-192.png     (copy from nuttiness/public/icons/)
+frontend/public/icons/icon-192-legacy.png
+frontend/public/icons/icon-512.png
+frontend/public/icons/icon-512-legacy.png
+frontend/index.html                    (title, manifest link, theme-color, apple-touch-icon)
 frontend/src/index.css                 (add @theme tokens + body background)
 frontend/src/layouts/AppShell.jsx      (dehard-code all colors, update branding)
 frontend/src/pages/Login.jsx           (dehard-code colors, update h1 text)
@@ -317,5 +455,8 @@ frontend/src/pages/Customers.jsx       (add mobile cards + sticky table + dehard
 frontend/src/pages/Expenses.jsx        (sticky table + dehard-code colors — cards already done)
 frontend/src/pages/Products.jsx        (sticky table + dehard-code colors — cards already done)
 frontend/src/pages/RawProducts.jsx     (sticky table + dehard-code colors — cards already done)
+frontend/src/pages/SaleDetail.jsx      (status-transition action color parity + token cleanup)
+frontend/src/components/Pagination.jsx (align structure + style with monolith pagination)
+frontend/src/pages/*                   (form styling parity sweep for CRUD forms)
 docs/plans/roadmap.md                  (phase 6 status → ✅)
 ```

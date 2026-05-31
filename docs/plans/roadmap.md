@@ -153,7 +153,7 @@ frontend/
 | 3 — Expenses | ✅ Complete |
 | 4 — Sales & Customers | ✅ Complete |
 | 5 — Reporting | ✅ Complete |
-| 6 — UI Alignment | 🔲 Not started |
+| 6 — UI Alignment | ✅ Complete |
 | 7 — Deployment | 🔲 Not started |
 
 ---

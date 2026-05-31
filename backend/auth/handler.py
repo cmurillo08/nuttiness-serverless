@@ -69,14 +69,10 @@ def logout():
 
 @app.get("/api/v1/auth/me")
 def me():
-    cookie_header = app.current_event.headers.get("cookie") or app.current_event.headers.get("Cookie")
-    if not cookie_header:
-        return _json_response(401, {"error": "Unauthenticated"})
-    token = None
-    for part in cookie_header.split(";"):
-        if part.strip().startswith("nuttiness_session="):
-            token = part.strip().split("=", 1)[1]
-            break
+    token = auth.extract_session_token(
+        headers=dict(app.current_event.headers or {}),
+        cookies=list(getattr(app.current_event, "cookies", []) or []),
+    )
     if not token:
         return _json_response(401, {"error": "Unauthenticated"})
     session_secret = os.environ.get("SESSION_SECRET", "")

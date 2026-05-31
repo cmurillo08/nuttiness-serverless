@@ -13,7 +13,7 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from backend.sales import db as sales_db
 from backend.sales.models import SaleCreateIn, SaleItemUpdateIn, SaleLineIn, SaleTransitionIn
-from backend.shared.auth import require_auth, set_request_headers
+from backend.shared.auth import require_auth, set_request_context
 from backend.shared.db import get_connection
 from backend.shared.pagination import build_pagination_response, parse_pagination
 
@@ -55,7 +55,10 @@ def _is_valid_uuid(value: str) -> bool:
 
 
 def _ensure_auth() -> Response | None:
-    set_request_headers(dict(app.current_event.headers or {}))
+    set_request_context(
+        dict(app.current_event.headers or {}),
+        list(getattr(app.current_event, "cookies", []) or []),
+    )
     if not require_auth():
         return _json_response({"error": "unauthorized"}, 401)
     return None
