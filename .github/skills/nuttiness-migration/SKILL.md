@@ -321,6 +321,53 @@ Migrate phases in this order to match the nuttiness phase progression:
 
 ---
 
+## UI Parity Checklist
+
+When migrating any page or layout from `nuttiness`, verify each item before marking the feature done:
+
+### Navigation / AppShell
+- [ ] Every nav item has an SVG icon matching the `nuttiness/components/AppShell.jsx` icon set (`SalesIcon`, `ExpensesIcon`, `RawProductsIcon`, `ProductsIcon`, `CustomersIcon`, `ReportsIcon`, `DashboardIcon`). Copy the icon SVG paths verbatim — do not redesign them.
+- [ ] Sidebar header shows the logo image (`/nuttiness-logo.png`). Copy `nuttiness/public/nuttiness-logo.png` → `frontend/public/nuttiness-logo.png` and reference it with `<img src="/nuttiness-logo.png">`. Vite serves `frontend/public/` at the root URL.
+- [ ] Mobile top bar also shows the logo image, not just text.
+- [ ] Static assets (`public/`) must be manually copied — there is no build-time asset pipeline that copies from `nuttiness/public/`.
+
+### Data Model Alignment
+- [ ] Before implementing a form or table, open the corresponding `nuttiness` page and check which fields are actually rendered. Do not carry over fields that are not present in the source UI even if they exist in the DB schema (e.g. `cost_price` was removed from the Products UI and must not appear in `ProductForm` or the Products table).
+- [ ] Cross-check column headers against what `nuttiness/components/EntityTable.jsx` receives as `columns` in the page. The `columns` array is the authoritative list of displayed fields.
+
+### Table / List views
+- [ ] Action buttons in tables use **icon buttons** (edit pencil + trash icon), not text labels. See `nuttiness/components/EntityTable.jsx` for reference.
+- [ ] On mobile (`< lg`), render a **card list** (`lg:hidden`) instead of a table. The desktop table wrapper gets `hidden lg:block`. Card items use a `<dl>` with `<dt>` / `<dd>` pairs.
+- [ ] Card action buttons are text + icon (`Edit`, `Delete`) with `min-h-10` touch target.
+- [ ] Table action icon buttons are `h-8 w-8` icon-only with `aria-label`.
+
+### Forms
+- [ ] Form fields match those shown in the `nuttiness` equivalent form page — not just the DB schema. Remove any field that does not appear in the source form.
+- [ ] Single remaining numeric field after removing others: drop the two-column grid layout, use a plain `space-y-1.5` wrapper.
+
+---
+
+## Static Asset Migration
+
+Vite serves everything in `frontend/public/` at the root URL. To migrate assets from `nuttiness/public/`:
+
+```bash
+# Copy logo (run once, from repo root)
+mkdir -p frontend/public
+cp "../nuttiness/public/nuttiness-logo.png" frontend/public/nuttiness-logo.png
+```
+
+Reference in JSX as `<img src="/nuttiness-logo.png" ...>` — no import needed.
+
+Add `onError` fallback on logo images so the sidebar degrades gracefully if the file is missing:
+```jsx
+<img src="/nuttiness-logo.png" alt="Nuttiness"
+  className="h-10 w-10 shrink-0 rounded-xl object-contain"
+  onError={(e) => { e.currentTarget.style.display = 'none' }} />
+```
+
+---
+
 ## Common Pitfalls
 
 | Pitfall | Fix |
@@ -331,3 +378,8 @@ Migrate phases in this order to match the nuttiness phase progression:
 | `NULL` from DB becomes `None` in Python | Check for `None` before serialization, not `null` |
 | React Router 404 on S3 refresh | Configure S3 error document to `index.html`, or use CloudFront error pages |
 | Environment variables not available in Lambda | Set under `environment:` in `serverless.yml` or use AWS SSM Parameter Store |
+| Nav icons missing | Copy SVG icon functions from `nuttiness/components/AppShell.jsx` verbatim; add `icon` prop to every `NAV_ITEMS` entry |
+| Logo not shown in sidebar | Copy `nuttiness/public/nuttiness-logo.png` to `frontend/public/nuttiness-logo.png`; add `onError` hide fallback |
+| Cost Price / removed fields reappearing | Cross-check form fields against `nuttiness` page UI, not just the DB schema |
+| Table shows text Edit/Delete buttons | Use icon-only buttons (`h-8 w-8`) in tables; text+icon buttons only in mobile cards |
+| Mobile shows table instead of cards | Wrap table in `hidden lg:block`; add card list with `lg:hidden` above it |

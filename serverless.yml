@@ -1,5 +1,6 @@
 service: nuttiness-serverless
 frameworkVersion: "3"
+useDotenv: true
 
 provider:
   name: aws
@@ -7,9 +8,11 @@ provider:
   region: us-east-1
   environment:
     DATABASE_URL: ${env:DATABASE_URL, ''}
+    PGSCHEMA: ${env:PGSCHEMA, ''}
     APP_USERNAME: ${env:APP_USERNAME, ''}
     APP_PASSWORD: ${env:APP_PASSWORD, ''}
     SESSION_SECRET: ${env:SESSION_SECRET, ''}
+    FRONTEND_ORIGIN: ${env:FRONTEND_ORIGIN, 'http://localhost:5173'}
 
 functions:
   health:
@@ -17,6 +20,154 @@ functions:
     events:
       - http:
           path: /api/v1/health
+          method: get
+          cors: true
+
+  auth:
+    handler: backend/auth/handler.handler
+    events:
+      - http:
+          path: /api/v1/auth/login
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/auth/logout
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/auth/me
+          method: get
+          cors: true
+
+  products:
+    handler: backend/products/handler.handler
+    events:
+      - http:
+          path: /api/v1/products
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/products
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/products/{id}
+          method: delete
+          cors: true
+      - http:
+          path: /api/v1/raw-products
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/raw-products
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/raw-products/{id}
+          method: delete
+          cors: true
+
+  expenses:
+    handler: backend/expenses/handler.handler
+    events:
+      - http:
+          path: /api/v1/expenses
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/expenses
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/expenses/{id}
+          method: delete
+          cors: true
+
+  sales:
+    handler: backend/sales/handler.handler
+    events:
+      - http:
+          path: /api/v1/sales
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/sales
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/transition
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items/{item_id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/sales/{id}/items/{item_id}
+          method: delete
+          cors: true
+
+  customers:
+    handler: backend/customers/handler.handler
+    events:
+      - http:
+          path: /api/v1/customers
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: get
+          cors: true
+      - http:
+          path: /api/v1/customers
+          method: post
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: put
+          cors: true
+      - http:
+          path: /api/v1/customers/{id}
+          method: delete
+          cors: true
+
+  reports:
+    handler: backend/reports/handler.handler
+    events:
+      - http:
+          path: /api/v1/reports/summary
           method: get
           cors: true
 
